@@ -55,4 +55,4 @@ generate() {
   done
 }
 
-generate > $OUTPUT
+generate | gofmt > $OUTPUT
