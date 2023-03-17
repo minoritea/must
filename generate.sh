@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 OUTPUT=$1
 if [ -z $OUTPUT ];then
-  OUTPUT=./must_generated.go
+  OUTPUT=./must_generated
 fi
 
 FROM=$2
@@ -55,4 +55,36 @@ generate() {
   done
 }
 
-generate | gofmt > $OUTPUT
+generate_test() {
+  echo package must
+  echo
+  echo 'import "fmt"'
+
+  for n in $(seq $FROM $TO);do
+    echo
+    echo "func ExampleMust$n() {"
+    echo "  defer func() {"
+    echo "    if err := recover(); err != nil {"
+    echo "      fmt.Println(err)"
+    echo "    }"
+    echo "  }()"
+    echo
+    echo -n "  f := func() ("
+    for i in $(seq $n);do
+      echo -n int,
+    done
+    echo -n "error) { return "
+    for i in $(seq $n);do
+      echo -n 0,
+    done
+    echo "fmt.Errorf(\"Must$n error\") }"
+    echo
+    echo "  Must$n(f())"
+    echo "// Output:"
+    echo "// Must$n error"
+    echo "}"
+  done
+}
+
+generate | gofmt > "${OUTPUT}.go"
+generate_test | gofmt > "${OUTPUT}_test.go"

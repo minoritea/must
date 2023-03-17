@@ -7,4 +7,4 @@ func Must(err error) {
 	}
 }
 
-//go:generate ./generate.sh ./must_generated.go 1 8
+//go:generate ./generate.sh ./must_generated 1 8
